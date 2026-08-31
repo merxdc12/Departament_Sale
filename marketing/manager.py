@@ -1,4 +1,5 @@
 from .models import MarketingInput, MarketingPlan, TestGuardrails
+from .organic import organic_first_plan
 
 
 def _validate(data: MarketingInput) -> None:
@@ -21,11 +22,7 @@ def _validate(data: MarketingInput) -> None:
 
 
 def build_marketing_plan(data: MarketingInput) -> MarketingPlan:
-    """Translate approved SEO intelligence and unit economics into a controlled plan.
-
-    This manager does not publish listings, buy ads, or scale campaigns. It only
-    prepares a strategy contract with conservative experiment guardrails.
-    """
+    """Build a controlled strategy. Organic validation is preferred before paid spend."""
     _validate(data)
     seo = data.seo.analysis
     margin = data.economics.contribution_margin
@@ -40,37 +37,41 @@ def build_marketing_plan(data: MarketingInput) -> MarketingPlan:
         language=data.language,
         contribution_margin=margin,
         margin_rate=margin_rate,
+        niche_type=data.niche_type,
     )
 
     if seo.decision == "REJECT":
-        return MarketingPlan(
-            **base,
-            action="BLOCK",
-            reasons=("SEO Decision Layer rejected this opportunity.", seo.reason),
-        )
-
+        return MarketingPlan(**base, action="BLOCK", reasons=("SEO Decision Layer rejected this opportunity.", seo.reason))
     if seo.decision == "REVIEW":
-        return MarketingPlan(
-            **base,
-            action="RESEARCH",
-            reasons=("SEO evidence is not strong enough for a market test.", seo.reason),
-        )
-
+        return MarketingPlan(**base, action="RESEARCH", reasons=("SEO evidence is not strong enough for a market test.", seo.reason))
     if margin <= 0:
+        return MarketingPlan(**base, action="BLOCK", reasons=("Product has no positive contribution margin.",))
+
+    if data.organic_first:
+        organic = organic_first_plan(data.seo.platform)
+        guardrails = TestGuardrails(
+            duration_days=7,
+            max_budget=0.0,
+            target_visits=100,
+            stop_conversion_below=0.01,
+            scale_conversion_at_or_above=0.03,
+            require_manual_approval=True,
+        )
         return MarketingPlan(
             **base,
-            action="BLOCK",
-            reasons=("Product has no positive contribution margin.",),
+            action="ORGANIC_TEST",
+            channels=organic.channels,
+            guardrails=guardrails,
+            reasons=(
+                "SEO approved testing and unit economics are positive.",
+                organic.reason,
+                "Paid acquisition remains disabled until organic evidence is evaluated.",
+            ),
         )
 
     if data.available_test_budget <= 0:
-        return MarketingPlan(
-            **base,
-            action="RESEARCH",
-            reasons=("SEO supports testing, but no test budget is available.",),
-        )
+        return MarketingPlan(**base, action="RESEARCH", reasons=("Paid testing requested but no test budget is available.",))
 
-    # v0.7 defaults are experiment guardrails, not autonomous spending authority.
     max_budget = round(min(data.available_test_budget, max(5.0, margin * 5)), 2)
     guardrails = TestGuardrails(
         duration_days=7,
@@ -80,14 +81,13 @@ def build_marketing_plan(data: MarketingInput) -> MarketingPlan:
         scale_conversion_at_or_above=0.03,
         require_manual_approval=True,
     )
-
     return MarketingPlan(
         **base,
         action="TEST",
         channels=data.preferred_channels,
         guardrails=guardrails,
         reasons=(
-            "SEO Decision Layer approved a controlled test.",
+            "SEO approved a controlled test.",
             "Positive contribution margin supports limited experimentation.",
             "Manual approval remains required before external spend or publishing.",
         ),
