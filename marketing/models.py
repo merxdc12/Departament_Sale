@@ -3,8 +3,19 @@ from typing import Literal
 
 from seo.decision import SEODecision
 
-MarketingAction = Literal["BLOCK", "RESEARCH", "TEST"]
-ChannelName = Literal["SEO", "PINTEREST", "INSTAGRAM", "ETSY_ADS", "ORGANIC_SOCIAL"]
+MarketingAction = Literal["BLOCK", "RESEARCH", "ORGANIC_TEST", "TEST"]
+ChannelName = Literal[
+    "SEO",
+    "GOOGLE_SEO",
+    "PINTEREST",
+    "PINTEREST_ORGANIC",
+    "INSTAGRAM",
+    "INSTAGRAM_ORGANIC",
+    "CONTENT",
+    "ETSY_ADS",
+    "ORGANIC_SOCIAL",
+]
+NicheType = Literal["TRENDING", "EVERGREEN", "SEASONAL", "HYBRID"]
 
 
 @dataclass(frozen=True)
@@ -43,6 +54,8 @@ class MarketingInput:
     language: str
     available_test_budget: float = 0.0
     preferred_channels: tuple[ChannelName, ...] = ("SEO",)
+    niche_type: NicheType = "EVERGREEN"
+    organic_first: bool = True
 
 
 @dataclass(frozen=True)
@@ -66,6 +79,7 @@ class MarketingPlan:
     language: str
     contribution_margin: float
     margin_rate: float
+    niche_type: NicheType = "EVERGREEN"
     channels: tuple[ChannelName, ...] = field(default_factory=tuple)
     guardrails: TestGuardrails | None = None
     reasons: tuple[str, ...] = field(default_factory=tuple)
