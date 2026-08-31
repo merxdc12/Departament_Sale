@@ -67,10 +67,13 @@ class TestMarketingManager(unittest.TestCase):
         plan = build_marketing_plan(self.marketing_input(economics=economics))
         self.assertEqual(plan.action, "BLOCK")
 
-    def test_no_budget_returns_research_not_autospend(self):
+    def test_no_budget_uses_organic_test_without_autospend(self):
         plan = build_marketing_plan(self.marketing_input(budget=0.0))
-        self.assertEqual(plan.action, "RESEARCH")
-        self.assertIsNone(plan.guardrails)
+        self.assertEqual(plan.action, "ORGANIC_TEST")
+        self.assertIsNotNone(plan.guardrails)
+        self.assertEqual(plan.guardrails.max_budget, 0.0)
+        self.assertTrue(plan.guardrails.require_manual_approval)
+        self.assertTrue(plan.channels)
 
     def test_low_confidence_does_not_reach_market_test(self):
         seo = self.seo(
