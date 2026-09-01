@@ -13,7 +13,12 @@ class TestRedditCampaignOrchestrator(unittest.TestCase):
     def data(self, rules=("no self promotion",)):
         return RedditIntelligenceInput(
             ranked_community=RankedCommunity(
-                name="r/example", relevance_score=90, activity_score=80, audience_score=70, total_score=84
+                name="r/example",
+                relevance_score=90,
+                activity_score=80,
+                audience_score=70,
+                discovery_score=84,
+                matched_terms=("example",),
             ),
             rule_evidence=RuleEvidence(
                 community_name="r/example", rule_texts=rules, source_verified=True
