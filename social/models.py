@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-SocialPlatform = Literal["PINTEREST", "THREADS", "INSTAGRAM", "FACEBOOK"]
+SocialPlatform = Literal["PINTEREST", "THREADS", "INSTAGRAM", "FACEBOOK", "TIKTOK", "X", "YOUTUBE"]
 SocialAction = Literal["BLOCK", "RESEARCH", "ORGANIC_CONTENT", "COMMERCIAL_CONTENT"]
 
 
