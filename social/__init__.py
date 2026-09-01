@@ -1,3 +1,4 @@
+from .auth import ConnectorCredentials, load_credentials, require_credentials
 from .connectors import PublishRequest, PublishResult, SocialConnector, require_publish_permission, require_safe_connector
 from .memory import SocialLearning, SocialMemory, learn_social_history, remember_social
 from .models import SocialPlan, SocialPolicy, SocialSignals
@@ -9,6 +10,7 @@ from .strategy import build_social_plan
 
 __all__ = [
     "ChannelPortfolioRow",
+    "ConnectorCredentials",
     "PublishRequest",
     "PublishResult",
     "SocialCampaignDecision",
@@ -24,10 +26,12 @@ __all__ = [
     "close_social_campaign",
     "evaluate_social_performance",
     "learn_social_history",
+    "load_credentials",
     "performance_from_plan",
     "plan_social_campaign",
     "policy_for",
     "remember_social",
+    "require_credentials",
     "require_publish_permission",
     "require_safe_connector",
 ]
