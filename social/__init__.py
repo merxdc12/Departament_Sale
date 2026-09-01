@@ -3,9 +3,11 @@ from .models import SocialPlan, SocialPolicy, SocialSignals
 from .orchestrator import SocialCampaignDecision, close_social_campaign, plan_social_campaign
 from .performance import SocialPerformance, evaluate_social_performance, performance_from_plan
 from .policies import policy_for
+from .portfolio import ChannelPortfolioRow, build_channel_portfolio
 from .strategy import build_social_plan
 
 __all__ = [
+    "ChannelPortfolioRow",
     "SocialCampaignDecision",
     "SocialLearning",
     "SocialMemory",
@@ -13,6 +15,7 @@ __all__ = [
     "SocialPlan",
     "SocialPolicy",
     "SocialSignals",
+    "build_channel_portfolio",
     "build_social_plan",
     "close_social_campaign",
     "evaluate_social_performance",
