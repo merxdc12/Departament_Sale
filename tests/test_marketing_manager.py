@@ -26,7 +26,7 @@ class TestMarketingManager(unittest.TestCase):
         values.update(overrides)
         return make_seo_decision(SEOInput(**values))
 
-    def marketing_input(self, seo=None, economics=None, budget=25.0):
+    def marketing_input(self, seo=None, economics=None, budget=25.0, organic_first=True):
         return MarketingInput(
             seo=seo or self.seo(),
             economics=economics or ProductEconomics(
@@ -41,10 +41,19 @@ class TestMarketingManager(unittest.TestCase):
             language="en",
             available_test_budget=budget,
             preferred_channels=("SEO", "PINTEREST"),
+            organic_first=organic_first,
         )
 
-    def test_approved_profitable_product_gets_controlled_test(self):
+    def test_approved_profitable_product_gets_organic_first_test(self):
         plan = build_marketing_plan(self.marketing_input())
+        self.assertEqual(plan.action, "ORGANIC_TEST")
+        self.assertGreater(plan.contribution_margin, 0)
+        self.assertIsNotNone(plan.guardrails)
+        self.assertTrue(plan.guardrails.require_manual_approval)
+        self.assertEqual(plan.guardrails.max_budget, 0.0)
+
+    def test_paid_test_requires_explicit_organic_first_override(self):
+        plan = build_marketing_plan(self.marketing_input(organic_first=False))
         self.assertEqual(plan.action, "TEST")
         self.assertGreater(plan.contribution_margin, 0)
         self.assertIsNotNone(plan.guardrails)
@@ -67,10 +76,13 @@ class TestMarketingManager(unittest.TestCase):
         plan = build_marketing_plan(self.marketing_input(economics=economics))
         self.assertEqual(plan.action, "BLOCK")
 
-    def test_no_budget_returns_research_not_autospend(self):
+    def test_no_budget_uses_organic_test_without_autospend(self):
         plan = build_marketing_plan(self.marketing_input(budget=0.0))
-        self.assertEqual(plan.action, "RESEARCH")
-        self.assertIsNone(plan.guardrails)
+        self.assertEqual(plan.action, "ORGANIC_TEST")
+        self.assertIsNotNone(plan.guardrails)
+        self.assertEqual(plan.guardrails.max_budget, 0.0)
+        self.assertTrue(plan.guardrails.require_manual_approval)
+        self.assertTrue(plan.channels)
 
     def test_low_confidence_does_not_reach_market_test(self):
         seo = self.seo(
