@@ -1,8 +1,4 @@
-"""Shared business objects used across all departments.
-
-These contracts are intentionally small and side-effect free. Departments exchange
-these objects instead of reaching into each other's internal state.
-"""
+"""Shared business objects used across all departments."""
 
 from dataclasses import dataclass, field
 from typing import Literal
@@ -85,3 +81,8 @@ class RiskAssessment:
     level: RiskLevel
     blocked: bool = False
     reasons: tuple[str, ...] = field(default_factory=tuple)
+    penalty: int = 0
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.penalty <= 100:
+            raise ValueError("penalty must be between 0 and 100")
