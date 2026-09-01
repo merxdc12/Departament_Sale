@@ -2,6 +2,15 @@
 
 from .event_bus import EventBus
 from .events import BusinessEvent
+from .integrations import (
+    publish_community_plan,
+    publish_kpi_dashboard,
+    publish_learning_recommendation,
+    publish_listing_performance,
+    publish_marketing_plan,
+    publish_seo_decision,
+    publish_social_plan,
+)
 from .models import (
     BusinessOpportunity,
     Customer,
@@ -22,4 +31,11 @@ __all__ = [
     "OpportunitySignals",
     "ProductProfile",
     "RiskAssessment",
+    "publish_community_plan",
+    "publish_kpi_dashboard",
+    "publish_learning_recommendation",
+    "publish_listing_performance",
+    "publish_marketing_plan",
+    "publish_seo_decision",
+    "publish_social_plan",
 ]
