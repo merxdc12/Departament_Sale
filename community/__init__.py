@@ -1,5 +1,6 @@
 """Rule-aware community marketing intelligence."""
 
+from .adaptive_strategy import AdaptiveContentDecision, build_adaptive_content_strategy
 from .content_strategy import ContentStrategy, build_content_strategy
 from .discovery import RankedCommunity, SubredditCandidate, rank_subreddits
 from .intelligence import RedditIntelligenceInput, build_reddit_opportunity
@@ -11,6 +12,7 @@ from .reddit import analyze_reddit_opportunity
 from .rules import RuleEvidence, analyze_rule_evidence
 
 __all__ = [
+    "AdaptiveContentDecision",
     "CommunityLearning",
     "CommunityMemory",
     "CommunityOpportunity",
@@ -27,6 +29,7 @@ __all__ = [
     "SubredditCandidate",
     "analyze_reddit_opportunity",
     "analyze_rule_evidence",
+    "build_adaptive_content_strategy",
     "build_content_strategy",
     "build_reddit_opportunity",
     "evaluate_community_performance",
